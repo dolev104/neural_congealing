@@ -184,7 +184,6 @@ class ComposedSTN(nn.Module):
         source_pixels = input_img if input_img_for_sampling is None else input_img_for_sampling
         warp = None  # None corresponds to identity warp
         intermediate_output_resolution = self.stn_in_size
-        intermediate_imgs, intermediate_warps = [], []
         transformations = []
         for i, stn in enumerate(self.stns):
             output_resolution_t = output_resolution if (i == self.N_minus_1 or sim_only) else intermediate_output_resolution

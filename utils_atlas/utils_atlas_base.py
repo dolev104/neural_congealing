@@ -153,9 +153,11 @@ def apply_griddata(input_image, upoints, edit_image_points_rgba, out_indices):
     return edited_image
 
 
-def upload_trained_model_and_data(checkpoint_path, atlas_model_module, dataset_module, device, eval_mode=True):
+def upload_trained_model_and_data(checkpoint_path, atlas_model_module, dataset_module, device, eval_mode=True, upload_masks=True):
     checkpoint = torch.load(checkpoint_path)
     run_config = checkpoint["config"]
+    if not upload_masks:
+        run_config["use_masks"] = False
 
     dataset = dataset_module(run_config, device)
     if run_config["ext_horizontal_flips"]:
@@ -164,7 +166,7 @@ def upload_trained_model_and_data(checkpoint_path, atlas_model_module, dataset_m
     init_with_flow = eval_mode or (checkpoint["epoch"] >= run_config["bootstrap_stn_sim"])
     model = atlas_model_module(run_config, dataset.dino_emb_size, dataset.init_atlas_dict, device, init_with_flow=init_with_flow)
     if "atlas_params_requires_grad" in run_config and not run_config["atlas_params_requires_grad"]:  # relevant only for bicycle set of SPair-71K (fixed atlas)
-        model.atlas_keys, model.atlas_saliency = dataset.imgs_dino_keys[run_config["im_idx_atlas_init"]], dataset.imgs_saliency_maps[run_config["im_idx_atlas_init"]].squeeze()
+        model.atlas_keys, model.atlas_saliency = dataset.imgs_dino_keys[run_config["im_idx_atlas_init"]].to(device), dataset.imgs_saliency_maps[run_config["im_idx_atlas_init"]].squeeze().to(device)
     model.load_state_dict(checkpoint["model"])
     model.to(device)
     if eval_mode:

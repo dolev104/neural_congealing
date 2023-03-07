@@ -43,26 +43,26 @@ class AtlasDataset(Dataset):
             feat_resx = int(self.extractor.p / self.extractor.stride[1] * (resx // self.extractor.p - 1) + 1)
         else:
             feat_resy, feat_resx = self.atlas_resolution, self.atlas_resolution
-
-        self.imgs_saliency_maps = torch.zeros(
-            (self.number_of_images, 1, feat_resy, feat_resx), requires_grad=False
-        )
         self.imgs_dino_keys = torch.zeros(
             (self.number_of_images, self.dino_emb_size, feat_resy, feat_resx),
             requires_grad=False,
+        )
+        self.imgs_saliency_maps = torch.zeros(
+            (self.number_of_images, 1, feat_resy, feat_resx), requires_grad=False
         )
         self.images_state = torch.zeros(self.number_of_images, dtype=torch.int8)  # 0 - regular image, 1 - horizontally flipped
         if config["ext_horizontal_flips"]:
             self.all_images_hor_flipped = torch.zeros(
                 (self.number_of_images, 3, resy, resx), requires_grad=False
             )
-            self.imgs_saliency_maps_hor_flipped = torch.zeros(
-                (self.number_of_images, 1, feat_resy, feat_resx), requires_grad=False
-            )
             self.imgs_dino_keys_hor_flipped = torch.zeros(
                 (self.number_of_images, self.dino_emb_size, feat_resy, feat_resx),
                 requires_grad=False,
             )
+            if self.config["use_masks"]:
+                self.imgs_saliency_maps_hor_flipped = torch.zeros(
+                    (self.number_of_images, 1, feat_resy, feat_resx), requires_grad=False
+                )
 
         self.load_data(saliency_masks_path)
 
@@ -89,7 +89,8 @@ class AtlasDataset(Dataset):
             if self.config["ext_horizontal_flips"]:
                 im_pil_hflip = im_pil.transpose(Image.FLIP_LEFT_RIGHT)
                 self.all_images_hor_flipped[i] = transforms.ToTensor()(im_pil_hflip)
-                self.imgs_saliency_maps_hor_flipped[i] = transforms.functional.hflip(saliency_map)
+                if self.config["use_masks"]:
+                    self.imgs_saliency_maps_hor_flipped[i] = transforms.functional.hflip(saliency_map)
 
                 im_keys_flipped, _ = self.extract_dino_features(im_pil_hflip, extract_saliency=False)
                 self.imgs_dino_keys_hor_flipped[i] = im_keys_flipped
