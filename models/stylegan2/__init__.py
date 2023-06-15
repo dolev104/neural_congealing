@@ -1,0 +1,1 @@
+# All code in this folder is taken from GANgealing (https://github.com/wpeebles/gangealing/tree/main/models/stylegan2)
