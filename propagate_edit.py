@@ -131,8 +131,7 @@ def make_visuals(args, dataset, model, device):
             image_grid = images2grid(orig_and_edited_frame, nrow=2, normalize=True, range=(0, 1), scale_each=False,
                                      pad_value=args.grid_pad_value)
             frames_grids.append(image_grid)
-        save_video(frames_grids, fps=10, out_path=f'{args.out}/input_and_edited_video.mp4')
-        # torchvision.io.write_video(f'{args.out}/edited_video.mp4', propagated_images.permute(0, 2, 3, 1) * 255, fps=10)
+        save_video(frames_grids, fps=args.vid_fps, out_path=f'{args.out}/input_and_edited_video.mp4')
         save_video(propagated_images, fps=args.vid_fps, out_path=f'{args.out}/edited_video.mp4', input_is_tensor=True)
     else:
         write(propagated_images, 'propagated', args.filenames_suffix)
