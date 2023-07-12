@@ -30,7 +30,7 @@ conda activate neural-congealing
 ### Download Sample Image Sets
 Download sample image sets and their trained models:
 ```
-gdown https://drive.google.com/uc?id=17tOao9v8QfonwvjCXPihJN5FA55PD39U&export=download
+gdown https://drive.google.com/uc?id=1O9MfMt6bbXIr3sOB6ZywP10SM7bB0wd0&export=download
 unzip data.zip
 ```
 
@@ -155,8 +155,21 @@ python eval/pck.py --dataset cub --cub_subset [0-13]
 For running on all sets at once, add `--all_cub` to the command. 
 </br>Results will be saved in `numeric_evaluations`.
 
-## Coming soon
-- [ ] More sample sets
+## Videos
+
+
+https://github.com/dolev104/neural_congealing/assets/71140564/62f60446-dc88-4528-b119-618786f83b3e
+
+
+Due to the abundant data present in videos, instead of training a model on all video frames, we can train only on a subset of representative frames, and at inference use the same trained model for all frames. You can see examples for videos together with the used training data in the <a href="https://neural-congealing.github.io/sm/index.html" target="_blank">Supplementary Materials</a>.
+<br>After you train on the subset of frames, evaluate the model using all video frames by specifying the path (use the same folder convention):
+```
+python eval/evaluate_model.py --video_frames_path path/to/all/video/frames/folder --checkpoint_path data/image_set_name/checkpoint_epoch_<num>.pt
+```
+Next, as mentioned in [Editing](https://github.com/dolev104/neural_congealing#editing), use the average image in atlas space as a template for your edit, and propagate it to the entire video by running the following command: 
+```
+python propagate_edit.py --video_frames_path path/to/all/video/frames/folder --checkpoint_path data/image_set_name/model_checkpoint_file.pt --label_path path/to/edit/image
+```
 
 ## Acknowledgements
 We thank [GANgealing](https://github.com/wpeebles/gangealing) and [dino-vit-features](https://github.com/ShirAmir/dino-vit-features) for their helpful code!
@@ -164,10 +177,11 @@ We thank [GANgealing](https://github.com/wpeebles/gangealing) and [dino-vit-feat
 ## Citation
 If you found our code useful, please consider citing:
 ```
-@article{ofriamar2023neural,
-         title      = {Neural Congealing: Aligning Images to a Joint Semantic Atlas},
-         author     = {Ofri-Amar, Dolev and Geyer, Michal and Kasten, Yoni and Dekel, Tali},
-         journal    = {arXiv preprint arXiv:2302.03956},
-         year       = {2023}
+@InProceedings{ofriamar2023neural,
+               title     = {Neural Congealing: Aligning Images to a Joint Semantic Atlas},
+               author    = {Ofri-Amar, Dolev and Geyer, Michal and Kasten, Yoni and Dekel, Tali},
+               booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+               pages     = {19403-19412},
+               year      = {2023}
 }
 ```
