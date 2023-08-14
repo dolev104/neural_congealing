@@ -1,0 +1,71 @@
+log_to_wandb: False
+results_folder: results  # if log_to_wandb=False, this is the folder where the results will be saved
+wandb_entity: wandb_entity_name
+wandb_project: wandb_project_name
+seed: -1
+# ------------------------------------------------------------------------------------------------------------------- #
+data_folder: data/spair_sets/spair_dog_test
+# ------------------------------------------------------------------------------------------------------------------- #
+upload_trained_model_checkpoint: False  # option for continue training
+checkpoint_path: ''
+# ------------------------------------------------------------------------------------------------------------------- #
+ext_horizontal_flips: True  # if True, will use horizontal flips during training
+ext_gradual_atlas_training: True  # if True, will add images gradually to train the atlas
+ext_update_flips_and_imgs_to_update_atlas_every: 100
+# ------------------------------------------------------------------------------------------------------------------- #
+image_resolution: 256
+atlas_resolution: 128  # if zero, will use DINO keys resolution (used for inspect_similarity_set, not for training/eval)
+use_masks: True
+batch_size: 2
+bootstrap_stn_sim: 1000  # bootstrap STNsim until this epoch. Only then add STNflow
+# ------------------------------------------------------------------------------------------------------------------- #
+# losses coefficients. set 0 to disable (except keys loss)
+keys_output_loss_coeff: 3500         # keys MSE loss
+keys_output_cosine_loss_coeff: 4000  # keys cosine distance
+
+atlas_saliency_loss_coeff: 5000
+huber_delta_sal_loss: 0.7
+
+atlas_saliency_center_loss_coeff: 3000
+sparsity_loss_saliency_coeff: 450
+sparsity_l1_loss_saliency_coeff: 1
+sparsity_l0_loss_saliency_coeff: 0.5
+sparsity_loss_keys_coeff: 10
+
+affine_scale_loss_coeff: 800  # Reg for STNsim
+# Reg for STNflow
+mag_uv_loss_coeff: 8000
+local_rigidity_loss_coeff: 25
+global_rigidity_loss_coeff: 90
+global_rig_derivative: 20
+# ------------------------------------------------------------------------------------------------------------------- #
+n_iters: 8001  # number of training iterations
+learning_rate_stn: &lr 0.0001
+learning_rate_atlas: 0.0008
+# ------------------------------------------------------------------------------------------------------------------- #
+# STN params
+flow_size: 128
+real_size: 256  # the same as image_resolution
+stn_channel_multiplier: 0.5
+stn_head_antialias: False
+stn_padding_mode_im: border   # reflection | border | zeros
+stn_padding_mode_keys: border   # reflection | border | zeros
+stn_padding_mode_saliency: zeros   # reflection | border | zeros
+# ------------------------------------------------------------------------------------------------------------------- #
+# DINO-ViT features
+dino_model_type: dino_vits8
+dino_stride_size: 4  # 8 for non-overlapping patches
+dino_keys_layer: 11
+# ------------------------------------------------------------------------------------------------------------------- #
+# Logging and visualizations
+pca_n_components: 5  # number of PCA components for keys visualization
+pca_visualize_with_global_minmax: False
+use_griddata: False  # if True, use griddata to apply edits; else use splat (recommended for training -- faster than griddata)
+log_losses_freq: 50
+log_images_freq: 1000
+log_additional_vis_freq: 8000
+save_model_starting_epoch: 7000
+save_model_freq: 1000
+save_model_initialization: False  # if true, saves model initialization
+save_complete_state: True
+
